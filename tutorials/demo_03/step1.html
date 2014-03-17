@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Three.js Particle demo</title>
+<script src="js/three.min.js"></script>
+<script>
+	function init(){
+
+		// set scene size
+		var WIDTH = 300,
+			HEIGHT = 250;
+		// camera vars
+		var VIEW_ANGLE = 45,
+			ASPECT = WIDTH / HEIGHT,
+			NEAR = 0.1,
+			FAR = 10000;
+		// create renderer, camera and scene
+		var renderer = new THREE.WebGLRenderer();
+		var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+		var scene = new THREE.Scene();
+
+		// set camera zoom
+		camera.position.z = 300;
+
+		// set renderer properties
+		renderer.setClearColor(new THREE.Color(0x000000,1));
+		renderer.setSize(WIDTH, HEIGHT);
+
+		// attach canvas to DOM
+		document.body.appendChild(renderer.domElement);
+
+		// create particle vars
+		var particleCount = 1800,
+			particles = new THREE.Geometry(),
+			particleMaterial = new THREE.ParticleBasicMaterial({
+				color: 0xFFFFFF,
+				size: 20,
+				map: THREE.ImageUtils.loadTexture('img/particle.png'),
+				blending: THREE.AdditiveBlending,
+				transparent: true });
+
+		// create the individual particles
+		for (var p = 0; p < particleCount; p++) {
+			// create particle with random position values
+			var pX = Math.random() * 500 - 250,
+				pY = Math.random() * 500 - 250,
+				pZ = Math.random() * 500 - 250,
+				particle = new THREE.Vector3(pX, pY, pZ);    
+
+			// add it to the geometry
+			particles.vertices.push(particle);
+		};
+
+		// create the particle system
+		var particleSystem = new THREE.ParticleSystem(particles, particleMaterial);
+		particleSystem.sortParticles = true;
+
+		// add it to scene
+		scene.add(particleSystem);
+
+		renderer.render(scene, camera);
+
+	};
+</script>
+
+</head>
+
+<body onload="init();">
+</body>
+
+</html>
+

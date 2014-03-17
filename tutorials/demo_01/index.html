@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Treehouse Logo in Three.js</title>
+
+<style>
+body{
+	margin: 0px;
+}
+</style>
+
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+
+<script>
+	// set up the scene, camera, and renderer as global variables
+	var scene,
+		camera,
+		renderer;
+
+	// sets up the scene
+	function init(){
+		// set the scene size
+		var WIDTH = window.innerWidth,
+			HEIGHT = window.innerHeight;
+
+		// create the scene 
+		scene = new THREE.Scene();
+
+		// create a renderer and add it to the DOM
+		renderer = new THREE.WebGLRenderer({antialias:true});
+		renderer.setSize(WIDTH,HEIGHT);
+		document.body.appendChild(renderer.domElement);
+
+		// create a camera, zoom it out from the model a bit, and add it to the scene
+		camera = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT, 0.1, 20000);
+		camera.position.set(0,6,0);
+		scene.add(camera);
+
+		// create an event listener that resizes the renderer with the browser window
+		window.addEventListener('resize', function(){
+			var WIDTH = window.innerWidth,
+				HEIGHT = window.innerHeight;
+			renderer.setSize(WIDTH,HEIGHT);
+			camera.aspect = WIDTH/HEIGHT;
+			camera.updateProjectionMatrix();
+		});
+
+		// set the background color of the scene
+		renderer.setClearColor(0x333F47, 1);
+
+		// create a light, set its position, and add it to the scene
+		var light = new THREE.PointLight(0xFFFFFF);
+		light.position.set(-100,200,100);
+		scene.add(light);
+
+		// load in the mesh and add it to the scene
+		var loader = new THREE.JSONLoader();
+		loader.load("models/treehouse_logo.js", function(geometry){
+			var material = new THREE.MeshLambertMaterial({color:0x55B663});
+			mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
+		});
+
+		// add OrbitControls so that we can pan around with the mouse
+		controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+		animate();
+		//renderer.render(scene, camera);
+		//controls.update();
+
+	};
+
+	function animate(){
+		// create animation loop for scene updates
+		requestAnimationFrame(animate);
+		// render the scene
+		renderer.render(scene, camera);
+		controls.update();
+	};
+
+	// questions -->
+	// how would I render without wanting controls?
+	// how would persisitent lighting to the scene rather than the object, as to create an enviroment?
+
+
+</script>
+
+<body onload="init();">
+
+</body>
+</html>

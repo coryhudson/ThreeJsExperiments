@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Three.js Particle demo</title>
+<script src="js/three.min.js"></script>
+<script>
+	function init(){
+
+		// set scene size
+		var WIDTH = 300,
+			HEIGHT = 250;
+		// camera vars
+		var VIEW_ANGLE = 45,
+			ASPECT = WIDTH / HEIGHT,
+			NEAR = 0.1,
+			FAR = 10000;
+		// create renderer, camera and scene
+		var renderer = new THREE.WebGLRenderer();
+		var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+		var scene = new THREE.Scene();
+
+		// set camera zoom
+		camera.position.z = 300;
+
+		// set renderer properties
+		renderer.setClearColor(new THREE.Color(0x000000,1));
+		renderer.setSize(WIDTH, HEIGHT);
+
+		// attach canvas to DOM
+		document.body.appendChild(renderer.domElement);
+
+		// create particle vars
+		var particleCount = 1800,
+			particles = new THREE.Geometry(),
+			particleMaterial = new THREE.ParticleBasicMaterial({
+				color: 0xFFFFFF,
+				size: 20,
+				map: THREE.ImageUtils.loadTexture('img/particle.png'),
+				blending: THREE.AdditiveBlending,
+				transparent: true });
+
+		// create the individual particles
+		for (var p = 0; p < particleCount; p++) {
+			// create particle with random position values
+			var pX = Math.random() * 500 - 250,
+				pY = Math.random() * 500 - 250,
+				pZ = Math.random() * 500 - 250,
+				particle = new THREE.Vector3(pX, pY, pZ); 
+
+				// create velocity vector
+				particle.velocity = new THREE.Vector3(0, -Math.random(), 0); 
+
+			// add it to the geometry
+			particles.vertices.push(particle);
+		};
+
+		// create the particle system
+		var particleSystem = new THREE.ParticleSystem(particles, particleMaterial);
+		particleSystem.sortParticles = true;
+
+		// add it to scene
+		scene.add(particleSystem);
+
+		// animation loop
+		function update(){
+			// add some rotation to the system
+			particleSystem.rotation.y += 0.01; 
+
+			var pCount = particleCount;
+
+			while(pCount--){
+				// get the particle
+				var particle = particles.vertices[pCount];
+
+				//console.log("Particle: " + particle.y)
+
+				// check to see if we need to reset
+				if(particle.y < -200){
+					particle.y = 200;
+					particle.velocity.y = 0;
+				}
+
+				// update velocity randomly
+				particle.velocity.y -= Math.random() * .1;
+
+				// update position
+				particle.y += particle.velocity.y;
+			} 
+
+			// flag to system that we've changed it's vertices
+			particleSystem.geometry.__dirtyVertices = true;
+			// draw
+			renderer.render(scene, camera);
+			// set up next call
+			requestAnimationFrame(update);
+
+		};
+
+		update();
+		//requestAnimationFrame(update);
+
+	};
+</script>
+
+</head>
+
+<body onload="init();">
+</body>
+
+</html>
+
